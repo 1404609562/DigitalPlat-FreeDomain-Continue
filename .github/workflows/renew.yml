@@ -38,7 +38,7 @@ jobs:
         run: |
           pip install playwright playwright-stealth requests
           playwright install chromium
-          playwright install-deps chromiu
+          playwright install-deps chromium
           
       - name: Verify Playwright installation
         run: |
