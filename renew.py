@@ -11,7 +11,7 @@ import json
 import logging
 from datetime import datetime
 from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
-from playwright_stealth import stealth_async
+from playwright_stealth import Stealth
 
 # 配置日志
 logging.basicConfig(
@@ -301,14 +301,12 @@ async def run_renewal():
     renewed_domains = []
     failed_domains = []
 
-    async with async_playwright() as p:
+    async with Stealth().use_async(async_playwright()) as p:
         try:
             # 步骤 1: 启动浏览器
             logger.info("正在启动浏览器...")
             browser, context = await setup_browser_context(p)
             page = await context.new_page()
-            
-            await stealth_async(page)  # 替代原有反检测脚本
 
             # 步骤 2: 登录
             await login(page)
