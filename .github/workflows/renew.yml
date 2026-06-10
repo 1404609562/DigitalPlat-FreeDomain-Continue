@@ -33,7 +33,13 @@ jobs:
         run: |
           python -m playwright install firefox
           python -m playwright install-deps firefox
-
+          
+      - name: Install dependencies
+        run: |
+          pip install playwright playwright-stealth requests
+          playwright install chromium
+          playwright install-deps chromiu
+          
       - name: Verify Playwright installation
         run: |
           python -m playwright --version
