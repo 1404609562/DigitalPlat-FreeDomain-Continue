@@ -11,6 +11,7 @@ import json
 import logging
 from datetime import datetime
 from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
+from playwright_stealth import stealth_async
 
 # 配置日志
 logging.basicConfig(
@@ -142,19 +143,20 @@ async def simulate_human_behavior(page):
 
 async def setup_browser_context(playwright):
     """设置浏览器上下文"""
-    browser = await playwright.firefox.launch(
+    browser = await playwright.chromium.launch(
         headless=True,
         args=[
-            '--disable-blink-features=AutomationControlled',
             '--no-sandbox',
+            '--disable-dev-shm-usage',
             '--disable-gpu',
-            '--window-size=1920,1080',
         ]
     )
 
     context = await browser.new_context(
-        user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0",
-        viewport={"width": 1920, "height": 1080}
+        user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        viewport={"width": 1920, "height": 1080},
+        locale="en-US",
+        timezone_id="America/New_York"
     )
 
     return browser, context
@@ -305,9 +307,8 @@ async def run_renewal():
             logger.info("正在启动浏览器...")
             browser, context = await setup_browser_context(p)
             page = await context.new_page()
-
-            # 添加反检测措施
-            await add_anti_detection_scripts(page)
+            
+            await stealth_async(page)  # 替代原有反检测脚本
 
             # 步骤 2: 登录
             await login(page)
